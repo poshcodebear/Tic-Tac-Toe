@@ -9,28 +9,22 @@ namespace TicTacToe
     {
         int row;
         int col;
-        Owner selection;
+        Player owner;
 
         public int Row { get => row; }
         public int Col { get => col; }
-        public Owner Selection { get => selection; }
+        public Player Owner { get => owner; }
 
-        Cell(int Row, int Col)
+        public Cell(int Row, int Col)
         {
             row = Row;
             col = Col;
-            selection = Owner.None;
         }
 
-        void SetOwner(Owner selection)
+        public void Claim(Player player)
         {
-            if (this.selection == Owner.None)
-                this.selection = selection;
+            if (owner == null)
+                owner = player;
         }
-    }
-
-    enum Owner
-    {
-        X, Y, None
     }
 }
