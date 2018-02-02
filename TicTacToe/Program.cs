@@ -8,7 +8,6 @@ namespace TicTacToe
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             Game game = new Game();
@@ -18,8 +17,8 @@ namespace TicTacToe
 
             game.Start();
 
-            game.Turn(player1, game.GetCell(1, 0));
-            game.Turn(player2, game.GetCell(2, 0));
+            game.PromptTurn(player1);
+            game.PromptTurn(player2);
 
             Console.ReadKey();
         }

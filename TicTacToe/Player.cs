@@ -7,9 +7,16 @@ namespace TicTacToe
 {
     class Player
     {
-        Cell[] cells;
         Mark mark;
         public Mark Mark { get => mark; }
+        public bool Won
+        {
+            get
+            {
+                // Need winning logic
+                return false;
+            }
+        }
 
         public Player(Mark mark)
         {

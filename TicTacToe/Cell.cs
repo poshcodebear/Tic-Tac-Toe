@@ -21,10 +21,14 @@ namespace TicTacToe
             col = Col;
         }
 
-        public void Claim(Player player)
+        public bool Claim(Player player)
         {
             if (owner == null)
+            {
                 owner = player;
+                return true;
+            }
+            return false;
         }
     }
 }
