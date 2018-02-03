@@ -11,7 +11,7 @@ namespace TicTacToe
 
         public Game()
         {
-            Init();
+            
         }
 
         void Init()
@@ -50,7 +50,7 @@ namespace TicTacToe
 
         void PaintGrid()
         {
-            //Console.Write(new string('\b', 110));
+            // Would like to make this a bit cleaner
             Console.SetCursorPosition(0, 2);
             Console.Write("    1       2       3\n");
             foreach (Cell cell in cells)
@@ -80,26 +80,42 @@ namespace TicTacToe
                 if (cell.Row == row && cell.Col == col)
                     return cell;
             }
-            return null; // should never happen...should...
+            return null;
         }
 
-        public void PromptTurn(Player player)
+        public void MakeSelection(Player player)
         {
-            bool turnDone;
-            do
-            {
-                Console.SetCursorPosition(0, 10);
-                Console.WriteLine($"Turn for player {player.Mark}!");
-                Console.Write("Make your selection:    \n \b");
-                string x = Convert.ToString(Console.ReadLine());
-                Console.SetCursorPosition(21, 11);
-                Console.Write($"{x}\n \b");
-                string y = Convert.ToString(Console.ReadLine());
+            string mark = player.Mark.ToString();
+            int row = 3;
+            int col = 4;
 
-                // Need to validate input (1 character between 1 and 3)
-                turnDone = Turn(player, GetCell(Convert.ToInt32(x), Convert.ToInt32(y)));
+            while (true)
+            {
+                PaintGrid();
+                Console.SetCursorPosition(col, row);
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+                string key = keyInfo.Key.ToString();
+
+                if (key == "UpArrow" && row > 3)
+                    row -= 2;
+                else if (key == "DownArrow" && row < 7)
+                    row += 2;
+                else if (key == "LeftArrow" && col > 4)
+                    col -= 8;
+                else if (key == "RightArrow" && col < 20)
+                    col += 8;
+                else if (key == "Spacebar" || key == "Enter")
+                {
+                    int actualRow = (row + 1) / 2 - 1;
+                    int actualCol = (col + 4) / 8;
+                    Cell cell = GetCell(actualRow, actualCol);
+                    if (cell != null && Turn(player, cell))
+                        return;
+                }
+
             }
-            while (!turnDone);
+
         }
     }
 }

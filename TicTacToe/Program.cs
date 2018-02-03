@@ -11,16 +11,16 @@ namespace TicTacToe
         static void Main(string[] args)
         {
             Game game = new Game();
-
             Player player1 = new Player(Mark.X);
             Player player2 = new Player(Mark.O);
 
             game.Start();
-
-            game.PromptTurn(player1);
-            game.PromptTurn(player2);
-
-            Console.ReadKey();
+            
+            while (true)
+            {
+                game.MakeSelection(player1);
+                game.MakeSelection(player2);
+            }
         }
     }
 }

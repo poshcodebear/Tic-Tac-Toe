@@ -1,6 +1,6 @@
 ﻿namespace TicTacToe
 {
-    enum Mark
+    public enum Mark
     {
         X,
         O
