@@ -14,12 +14,24 @@ namespace TicTacToe
             Player player1 = new Player(Mark.X);
             Player player2 = new Player(Mark.O);
 
-            game.Start();
+            game.MainMenu();
+            /*game.Start();*/
             
             while (true)
             {
                 game.MakeSelection(player1);
+                if (game.CheckWin(player1))
+                {
+                    Console.WriteLine("Player 1 wins");
+                    break;
+                }
                 game.MakeSelection(player2);
+                game.CheckWin(player2);
+                if (game.CheckWin(player2))
+                {
+                    Console.WriteLine("Player 2 wins");
+                    break;
+                }
             }
         }
     }
