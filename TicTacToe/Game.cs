@@ -16,6 +16,9 @@ namespace TicTacToe
 
         void Init()
         {
+            // Initialize with new cells
+            // This could be moved to a constructor, though it would require a new game object each time,
+            // which would be a breaking change...
             cells = new Cell[9];
 
             int i = 0;
@@ -31,6 +34,8 @@ namespace TicTacToe
 
         public void MainMenu()
         {
+            // Draw the main menu and handle input from player
+
             Console.Clear();
             Console.SetCursorPosition(0, 0);
             Console.Write("TicTacToe - Game Menu\n\n");
@@ -61,7 +66,8 @@ namespace TicTacToe
                             break;
                         case 2:
                             Environment.Exit(0);
-                            break; // program can never reach this line, but compiler will complain without it
+                            // program can never reach this line, but compiler will complain without it:
+                            break; 
                     }
                     return;
                 }
@@ -70,6 +76,7 @@ namespace TicTacToe
 
         public void Start()
         {
+            // Starts a new game
             Init();
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -79,26 +86,32 @@ namespace TicTacToe
 
         public bool Turn(Player player, Cell cell)
         {
+            // Attempts to take a turn for the specified user
             if (cell.Claim(player))
             {
-                PaintGrid();
+                PaintGrid(player);
                 return true;
             }
             return false;
         }
 
-        void PaintGrid()
+        void PaintGrid() { PaintGrid(null); }
+
+        void PaintGrid(Player player)
         {
+            // Generates the grid with claimed cells
+            // Note: any changes here that alter the layout MUST include adjustments to MakeSelection()'s actual[...] formuae and movement keys
+            string turnMark = player?.Mark.ToString();
+            Console.SetCursorPosition(0, 0);
+            Console.Write($"TicTacToe - Play for {turnMark}");
+
             // Would like to make this a bit cleaner
             Console.SetCursorPosition(0, 2);
-            Console.Write("    1       2       3\n");
             foreach (Cell cell in cells)
             {
                 if (cell.Col == 1 && cell.Row != 1)
-                    Console.Write($"\n{new string('-', 23)}\n");
-                if (cell.Col == 1)
-                    Console.Write($"{cell.Row} ");
-                else
+                    Console.Write($"\n{new string('-', 21)}\n");
+                else if (cell.Col != 1)
                     Console.Write(" | ");
 
                 string mark;
@@ -114,6 +127,7 @@ namespace TicTacToe
 
         public Cell GetCell(int row, int col)
         {
+            // Locates and returns the cell at the selected position
             foreach (Cell cell in cells)
             {
                 if (cell.Row == row && cell.Col == col)
@@ -124,30 +138,46 @@ namespace TicTacToe
 
         public void MakeSelection(Player player)
         {
+            // Gets input from player to select cell
             string mark = player.Mark.ToString();
-            int row = 3;
-            int col = 4;
+            int row = 2;
+            int col = 2;
 
             while (true)
             {
-                PaintGrid();
+                PaintGrid(player);
+
+                // Translation between actual cell positions on the board and cell definitions
+                // Note: alterations to the grid REQUIRE adjustments here
+                int actualRow = (row + 2) / 2 - 1;
+                int actualCol = (col + 6) / 8;
+
+                // Highlights the cursor position (unless it's claimed already)
                 Console.SetCursorPosition(col, row);
+                if (!CheckCell(actualRow, actualCol))
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write(mark);
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.SetCursorPosition(col, row);
+                }
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
 
+                // Defines movement keys
+                // Note: alterations to the grid REQUIRE adjustments here
                 string key = keyInfo.Key.ToString();
-
-                if (key == "UpArrow" && row > 3)
+                if (key == "UpArrow" && row > 2)
                     row -= 2;
-                else if (key == "DownArrow" && row < 7)
+                else if (key == "DownArrow" && row < 6)
                     row += 2;
-                else if (key == "LeftArrow" && col > 4)
+                else if (key == "LeftArrow" && col > 2)
                     col -= 8;
-                else if (key == "RightArrow" && col < 20)
+                else if (key == "RightArrow" && col < 18)
                     col += 8;
                 else if (key == "Spacebar" || key == "Enter")
                 {
-                    int actualRow = (row + 1) / 2 - 1;
-                    int actualCol = (col + 4) / 8;
                     Cell cell = GetCell(actualRow, actualCol);
                     if (cell != null && Turn(player, cell))
                         return;
@@ -155,8 +185,18 @@ namespace TicTacToe
             }
         }
 
+        public bool CheckCell(int row, int col)
+        {
+            // Check to see if current cell is owned
+            Cell cell = GetCell(row, col);
+            if (cell.Owner != null)
+                return true;
+            return false;
+        }
+
         public bool CheckWin(Player player)
         {
+            // Check to see if the player has won the game
             // I can't help but feel this can be cleaner...
             for (int i = 1; i <= 3; i++)
             {
